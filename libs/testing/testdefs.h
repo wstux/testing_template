@@ -25,10 +25,27 @@
 #ifndef _TESTING_TESTDEFS_H
 #define _TESTING_TESTDEFS_H
 
-#include "testing/details/condition_defs.h"
 #include "testing/details/testdefs_impl.h"
 #include "testing/details/tester.h"
 #include "testing/testing_interface.h"
+
+/*
+ */
+
+#define EXPECTED_FALSE(cond)        \
+    if (! (cond)) ;                 \
+    else __FAILURE_MESSAGE(cond)
+
+#define EXPECTED_TRUE(cond)         \
+    if ((cond)) ;                   \
+    else __FAILURE_MESSAGE(cond)
+
+#define EXPECTED_EQ(et, td)         \
+    if (et == td) ;                 \
+    else __FAILURE_MESSAGE(cond)
+
+/*
+ */
 
 #define TEST(case_name, test_name)          \
     __TEST_IMPL(case_name, test_name)

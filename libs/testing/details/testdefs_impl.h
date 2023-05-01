@@ -28,6 +28,14 @@
 /*
  */
 
+#define __FAILURE_MESSAGE(cond) \
+    ::testing::details::fail() << __FILE__ << ":" << __LINE__ << ":" << std::endl   \
+                               << "    " << __PRETTY_FUNCTION__ << ":" << std::endl \
+                               << "Failure condition '" << #cond << "'" << std::endl
+
+/*
+ */
+
 #define __CVT_TO_STRING(x)              \
     []() -> std::string { return #x; }()
 
