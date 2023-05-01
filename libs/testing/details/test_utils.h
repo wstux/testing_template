@@ -25,13 +25,82 @@
 #ifndef _TESTING_TEST_UTILS_H
 #define _TESTING_TEST_UTILS_H
 
+#ifdef __GNUG__
+    #include <cstdlib>
+    #include <cxxabi.h>
+#endif
+
+#include <cstring>
 #include <iostream>
 #include <memory>
+#include <type_traits>
 
 #include "testing/details/timer.h"
+#include "testing/details/typed_test_utils.h"
+
+// Check RTTI enabling for typeid
+#if defined(__clang__)
+    #if __has_feature(cxx_rtti)
+        #define __RTTI_ENABLED
+    #endif
+#elif defined(__GNUG__)
+    #if defined(__GXX_RTTI)
+        #define __RTTI_ENABLED
+    #endif
+#elif defined(_MSC_VER)
+    #if defined(_CPPRTTI)
+        #define __RTTI_ENABLED
+    #endif
+#endif
 
 namespace testing {
 namespace details {
+
+inline std::string canonize(std::string s)
+{
+    static const std::string prefix = "std::__";
+    if (s.compare(0, prefix.size(), prefix) == 0) {
+        size_t end = s.find("::", prefix.size());
+        if (end != s.npos) {
+            s.erase(std::strlen("std"), end - std::strlen("std"));
+        }
+    }
+    return s;
+}
+
+inline std::string demangle(const char* name)
+{
+#if defined(__GNUG__)
+    int status = -4; // some arbitrary value to eliminate the compiler warning
+
+    std::unique_ptr<char, void(*)(void*)> res(abi::__cxa_demangle(name, NULL, NULL, &status), std::free);
+    return (status == 0) ? res.get() : name ;
+#else
+    // does nothing if not g++
+    return name;
+#endif
+}
+
+template <class TType>
+std::string type_name() { return demangle(typeid(TType).name()); }
+
+template <class TType>
+std::string type_name(const TType& t) { return demangle(typeid(t).name()); }
+
+template <typename T>
+std::string canon_type_name()
+{
+#if defined(__RTTI_ENABLED)
+    #if defined(__GNUG__)
+        std::string name = type_name<T>();
+        return canonize(name);
+    #else
+        return name;
+    #endif
+#else
+  return "<type>";
+#endif
+}
 
 class itest_suite
 {
@@ -164,8 +233,52 @@ private:
     test_list_t m_tests;
 };
 
+template<typename TTester, template<typename> class TCase, typename TTypes>
+class typed_test_inserter
+{
+public:
+    static bool insert(TTester& tester, const std::string& case_name,
+                       const std::string& test_name, size_t level)
+    {
+        using head_t = typename TTypes::head;
+        using tail_t = typename TTypes::tail;
+        using case_t = TCase<head_t>;
+        using decorator = suite_decorator<case_t>;
+
+        if (std::is_same<head_t, none_t>::value) {
+            return true;
+        }
+
+        std::shared_ptr<case_t> p_ptr = std::make_shared<case_t>();
+        typename decorator::ptr p_decorator = std::make_shared<decorator>(p_ptr);
+
+        const std::string test_case_name = "[" + std::to_string(level) + "] " +
+            case_name + "<" + canon_type_name<head_t>() + ">";
+        bool result = tester.insert(test_case_name, test_name, p_decorator);
+        if (! result) {
+            return false;
+        }
+
+        return typed_test_inserter<TTester, TCase, tail_t>::insert(tester, case_name, test_name, ++level);
+    }
+};
+
+template<typename TTester, template<typename> class TCase>
+class typed_test_inserter<TTester, TCase, type_0>
+{
+public:
+    static bool insert(TTester&, const std::string&, const std::string&, size_t)
+    {
+        return true;
+    }
+};
+
 } // namespace details
 } // namespace testing
+
+#if defined(__RTTI_ENABLED)
+    #undef __RTTI_ENABLED
+#endif
 
 #endif /* _TESTING_TEST_UTILS_H */
 
