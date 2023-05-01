@@ -31,8 +31,7 @@
 #include <numeric>
 #include <vector>
 
-#include "testing/details/test_case.h"
-#include "testing/details/test_suite_interface.h"
+#include "testing/details/test_utils.h"
 
 namespace testing {
 namespace details {

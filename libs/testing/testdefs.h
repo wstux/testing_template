@@ -27,7 +27,6 @@
 
 #include "testing/details/condition_defs.h"
 #include "testing/details/testdefs_impl.h"
-#include "testing/details/test_suite_interface.h"
 #include "testing/details/tester.h"
 #include "testing/testing_interface.h"
 

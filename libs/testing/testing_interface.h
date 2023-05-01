@@ -27,7 +27,7 @@
 
 #include <memory>
 
-#include "testing/details/test_suite_interface.h"
+#include "testing/details/test_utils.h"
 
 namespace testing {
 
