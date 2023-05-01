@@ -79,5 +79,5 @@ private:
 } // namespace details
 } // namespace testing
 
-#endif // _TESTING_TIMER_H
+#endif /* _TESTING_TIMER_H */
 

@@ -22,8 +22,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef _TESTING_CONDITION_EFS_H
-#define _TESTING_CONDITION_EFS_H
+#ifndef _TESTING_CONDITION_DEFS_H
+#define _TESTING_CONDITION_DEFS_H
 
 #define __FAILURE_MESSAGE(cond) \
     ::testing::details::fail() << __FILE__ << ":" << __LINE__ << ":" << std::endl   \
@@ -42,5 +42,5 @@
     if (et == td) ;                 \
     else __FAILURE_MESSAGE(cond)
 
-#endif /* _TESTING_CONDITION_EFS_H */
+#endif /* _TESTING_CONDITION_DEFS_H */
 
