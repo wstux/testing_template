@@ -28,10 +28,16 @@
 #include "testing/details/commondefs.h"
 #include "testing/details/condition_defs.h"
 #include "testing/details/test_defs_impl.h"
+#include "testing/details/test_f_defs_impl.h"
+#include "testing/details/test_suite_interface.h"
 #include "testing/details/tester.h"
+#include "testing/testing_interface.h"
 
 #define TEST(case_name, test_name)      \
     __TEST_IMPL(case_name, test_name)
+
+#define TEST_F(test_fixture, test_name)                     \
+    __TEST_F_IMPL(test_fixture, test_name)
 
 #define RUN_ALL_TESTS() ::testing::details::tester::run_all_tests()
 

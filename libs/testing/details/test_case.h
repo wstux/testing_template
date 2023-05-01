@@ -65,10 +65,6 @@ public:
     size_t tests_count() const { return m_tests.size(); }
 
 private:
-    void init_case() const { test_failer::get_instance().init_case(); }
-
-    bool is_case_failed() const { return test_failer::get_instance().is_case_failed(); }
-
     static bool is_disabled(const std::string& test_name)
     {
         return test_name.rfind("DISABLED", 0) == 0;

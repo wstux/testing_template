@@ -22,58 +22,44 @@
  * THE SOFTWARE.
  */
 
-#include "testing/testdefs.h"
+#ifndef _TESTING_TESTING_INTERFACE_H
+#define _TESTING_TESTING_INTERFACE_H
 
-class test_fixture_1 : public ::testing::Test
+#include <memory>
+
+#include "testing/details/test_suite_interface.h"
+
+namespace testing {
+
+class Test
 {
 public:
-    virtual void SetUp() override
+    using ptr = std::shared_ptr<Test>;
+
+    virtual ~Test() = default;
+
+    void run()
     {
-        EXPECTED_TRUE(1 == 1);
+        testing::details::init_case();
+        SetUp();
+        if (! testing::details::is_case_failed()) {
+            test_body();
+        }
+        TearDown();
     }
+
+protected:
+    Test() {}
+
+    virtual void SetUp() {}
+
+    virtual void TearDown() {}
+
+private:
+    virtual void test_body() = 0;
 };
 
-class test_fixture_2 : public ::testing::Test
-{
-public:
-    virtual void SetUp() override
-    {
-        EXPECTED_TRUE(1 == 2);
-    }
-};
+} // namespace testing
 
-TEST(case_name_1, test_name_1)
-{
-    EXPECTED_TRUE(1 == 1);
-}
-
-TEST(case_name_1, test_name_2)
-{
-    EXPECTED_FALSE(1 == 2);
-}
-
-TEST(case_name_2, test_name_1)
-{
-    EXPECTED_EQ(1, 1);
-}
-
-TEST_F(test_fixture_1, test_name_1)
-{
-    EXPECTED_TRUE(1 == 1);
-}
-
-TEST_F(test_fixture_1, test_name_2)
-{
-    EXPECTED_FALSE(1 == 2);
-}
-
-TEST_F(test_fixture_2, test_name_1)
-{
-    EXPECTED_TRUE(1 == 1);
-}
-
-int main(int /*argc*/, char** /*argv*/)
-{
-    return RUN_ALL_TESTS();
-}
+#endif /* _TESTING_TESTING_INTERFACE_H */
 

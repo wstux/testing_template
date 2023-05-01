@@ -40,6 +40,22 @@ public:
     virtual void test_body() = 0;
 };
 
+template<typename TType>
+class suite_decorator final : public itest_suite
+{
+public:
+    using ptr = std::shared_ptr<suite_decorator>;
+
+    explicit suite_decorator(const typename TType::ptr& p_test)
+        : m_p_test(p_test)
+    {}
+
+    virtual void test_body() override { m_p_test->run(); }
+
+private:
+    typename TType::ptr m_p_test;
+};
+
 class test_failer final
 {
 public:
@@ -74,6 +90,10 @@ using test_name_t = std::string;
 using type_name_t = std::string;
 using test_descr_t = std::pair<test_name_t, itest_suite::ptr>;
 using test_list_t = std::vector<test_descr_t>;
+
+inline void init_case() { test_failer::get_instance().init_case(); }
+
+inline bool is_case_failed() { return test_failer::get_instance().is_case_failed(); }
 
 } // namespace details
 } // namespace testing
