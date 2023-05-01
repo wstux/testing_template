@@ -40,6 +40,9 @@
 #define __TEST_INSERT_RES(case_name, test_name)     \
     __##case_name##_##test_name##_res
 
+#define __TEST_TYPE_PARAMS(suite_name)  \
+    __test_type_##suite_name##_param
+
 /*
  *  \brief  Implementation for TEST macro.
  */
@@ -85,6 +88,30 @@
             __TEST_CLASS_NAME(suite_name, test_name)::make_suite_ptr());    \
     void __TEST_CLASS_NAME(suite_name, test_name)::test_body()
 
+/*
+ *  \brief  Implementation for TYPED_TEST macro.
+ */
+
+#define __INIT_TYPED_TEST_SUITE(case_name, types)                           \
+    using __TEST_TYPE_PARAMS(case_name) = types
+
+# define __TYPED_TEST_IMPL(case_name, test_name)                            \
+    template<typename TTypeParam>                                           \
+    class __TEST_CLASS_NAME(case_name, test_name)                           \
+        : public case_name<TTypeParam>                                      \
+    {                                                                       \
+    private:                                                                \
+        using TestFixture = case_name<TTypeParam>;                          \
+        using TypeParam = TTypeParam;                                       \
+        virtual void test_body();                                           \
+    };                                                                      \
+    [[maybe_unused]] static bool __TEST_INSERT_RES(case_name, test_name) =  \
+        ::testing::details::tester::insert_typed_case<                      \
+                    __TEST_CLASS_NAME(case_name, test_name),                \
+                    typename __TEST_TYPE_PARAMS(case_name)::type>(          \
+            __CVT_TO_STRING(case_name), __CVT_TO_STRING(test_name));        \
+    template<typename TTypeParam>                                           \
+    void __TEST_CLASS_NAME(case_name, test_name)<TTypeParam>::test_body()
 
 #endif /* _TESTING_TESTDEFS_IMPL_H */
 

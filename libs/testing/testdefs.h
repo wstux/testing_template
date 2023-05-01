@@ -30,13 +30,19 @@
 #include "testing/details/tester.h"
 #include "testing/testing_interface.h"
 
-#define TEST(case_name, test_name)      \
+#define TEST(case_name, test_name)          \
     __TEST_IMPL(case_name, test_name)
 
-#define TEST_F(test_fixture, test_name)                     \
+#define TEST_F(test_fixture, test_name)     \
     __TEST_F_IMPL(test_fixture, test_name)
+
+#define TYPED_TEST_SUITE(case_name, types)  \
+    __INIT_TYPED_TEST_SUITE(case_name, types)
+
+#define TYPED_TEST(case_name, types)        \
+    __TYPED_TEST_IMPL(case_name, types)
 
 #define RUN_ALL_TESTS() ::testing::details::tester::run_all_tests()
 
-#endif // _TESTING_TESTDEFS_H
+#endif /* _TESTING_TESTDEFS_H */
 

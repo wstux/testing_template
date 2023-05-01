@@ -42,6 +42,32 @@ public:
     }
 };
 
+template<typename TType>
+class typed_fixture_1 : public ::testing::Test
+{
+public:
+    virtual void SetUp() override
+    {
+        EXPECTED_TRUE(1 == 1);
+    }
+};
+
+template<typename TType>
+class typed_fixture_2 : public ::testing::Test
+{
+public:
+    virtual void SetUp() override
+    {
+        EXPECTED_TRUE(1 == 1);
+    }
+};
+
+using types_1 = testing::Types<uint8_t, uint16_t, uint32_t>;
+TYPED_TEST_SUITE(typed_fixture_1, types_1);
+
+using types_2 = testing::Types<uint8_t, uint16_t, uint32_t>;
+TYPED_TEST_SUITE(typed_fixture_2, types_2);
+
 TEST(case_name_1, test_name_1)
 {
     EXPECTED_TRUE(1 == 1);
@@ -68,6 +94,21 @@ TEST_F(test_fixture_1, test_name_2)
 }
 
 TEST_F(test_fixture_2, test_name_1)
+{
+    EXPECTED_TRUE(1 == 1);
+}
+
+TYPED_TEST(typed_fixture_1, test_name_1)
+{
+    EXPECTED_TRUE(1 == 1);
+}
+
+TYPED_TEST(typed_fixture_1, test_name_2)
+{
+    EXPECTED_FALSE(1 == 2);
+}
+
+TYPED_TEST(typed_fixture_2, test_name_1)
 {
     EXPECTED_TRUE(1 == 1);
 }
