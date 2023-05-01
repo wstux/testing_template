@@ -27,7 +27,8 @@
 
 #include <memory>
 
-#include "testing/details/test_suite_interface.h"
+#include "testing/details/test_utils.h"
+#include "testing/details/typed_test_utils.h"
 
 namespace testing {
 
@@ -57,6 +58,20 @@ protected:
 
 private:
     virtual void test_body() = 0;
+};
+
+template<typename T1  = details::none_t, typename T2  = details::none_t,
+         typename T3  = details::none_t, typename T4  = details::none_t,
+         typename T5  = details::none_t, typename T6  = details::none_t,
+         typename T7  = details::none_t, typename T8  = details::none_t,
+         typename T9  = details::none_t, typename T10 = details::none_t,
+         typename T11 = details::none_t, typename T12 = details::none_t,
+         typename T13 = details::none_t, typename T14 = details::none_t,
+         typename T15 = details::none_t>
+struct Types
+{
+    typedef details::type_15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11,
+                             T12, T13, T14, T15> type;
 };
 
 } // namespace testing

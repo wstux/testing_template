@@ -31,8 +31,8 @@
 #include <numeric>
 #include <vector>
 
-#include "testing/details/test_case.h"
-#include "testing/details/test_suite_interface.h"
+#include "testing/details/test_utils.h"
+#include "testing/details/typed_test_utils.h"
 
 namespace testing {
 namespace details {
@@ -56,19 +56,21 @@ public:
     int run_tests() const
     {
         const size_t tests_cnt = tests_count();
-        const size_t suits_count = 1;
         size_t failed_count = 0;
 
         std::cout << "[==========] Running " << tests_cnt << " tests from "
-                  << suits_count << " test suits." << std::endl;
+                  << m_tests.size() << " test suits." << std::endl;
         timer total_sw(true);
         for (const test_case::ptr& p_test : m_tests) {
             failed_count += p_test->run_all_cases();
         }
 
         const double total_ms = total_sw.value_ms();
-        std::cout << "[==========] " << tests_cnt << " tests from " << suits_count
+        std::cout << "[==========] " << tests_cnt << " tests from " << m_tests.size()
                   << " test suits ran (" << total_ms << " ms)." << std::endl;
+        if (failed_count != 0) {
+            std::cout << "[  FAILED  ] " << failed_count << " tests." << std::endl;
+        }
         std::cout << "[  PASSED  ] " << tests_cnt << " tests." << std::endl;
 
         return (failed_count == 0) ? 0 : 1;
@@ -78,6 +80,14 @@ public:
                        const itest_suite::ptr& p_suite)
     {
         return get_instance().insert_test(case_name, test_name, p_suite);
+    }
+
+    template<template<typename> class TCase, typename TTypes>
+    static bool insert_typed_case(const case_name_t& case_name,
+                                  const test_name_t& test_name)
+    {
+        return typed_test_inserter<tester, TCase, TTypes>::insert(get_instance(),
+                                case_name, test_name, 0);
     }
 
     static tester& get_instance()

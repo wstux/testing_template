@@ -25,21 +25,41 @@
 #ifndef _TESTING_TESTDEFS_H
 #define _TESTING_TESTDEFS_H
 
-#include "testing/details/commondefs.h"
-#include "testing/details/condition_defs.h"
-#include "testing/details/test_defs_impl.h"
-#include "testing/details/test_f_defs_impl.h"
-#include "testing/details/test_suite_interface.h"
+#include "testing/details/testdefs_impl.h"
 #include "testing/details/tester.h"
 #include "testing/testing_interface.h"
 
-#define TEST(case_name, test_name)      \
+/*
+ */
+
+#define EXPECTED_FALSE(cond)        \
+    if (! (cond)) ;                 \
+    else __FAILURE_MESSAGE(cond)
+
+#define EXPECTED_TRUE(cond)         \
+    if ((cond)) ;                   \
+    else __FAILURE_MESSAGE(cond)
+
+#define EXPECTED_EQ(et, td)         \
+    if (et == td) ;                 \
+    else __FAILURE_MESSAGE(cond)
+
+/*
+ */
+
+#define TEST(case_name, test_name)          \
     __TEST_IMPL(case_name, test_name)
 
-#define TEST_F(test_fixture, test_name)                     \
+#define TEST_F(test_fixture, test_name)     \
     __TEST_F_IMPL(test_fixture, test_name)
+
+#define TYPED_TEST_SUITE(case_name, types)  \
+    __INIT_TYPED_TEST_SUITE(case_name, types)
+
+#define TYPED_TEST(case_name, types)        \
+    __TYPED_TEST_IMPL(case_name, types)
 
 #define RUN_ALL_TESTS() ::testing::details::tester::run_all_tests()
 
-#endif // _TESTING_TESTDEFS_H
+#endif /* _TESTING_TESTDEFS_H */
 
