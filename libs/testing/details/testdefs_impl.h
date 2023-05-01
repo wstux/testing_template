@@ -22,10 +22,44 @@
  * THE SOFTWARE.
  */
 
-#ifndef _TESTING_TEST_F_DEFS_IMPL_H
-#define _TESTING_TEST_F_DEFS_IMPL_H
+#ifndef _TESTING_TESTDEFS_IMPL_H
+#define _TESTING_TESTDEFS_IMPL_H
 
-#include "testing/details/commondefs.h"
+/*
+ */
+
+#define __CVT_TO_STRING(x)              \
+    []() -> std::string { return #x; }()
+
+#define __TEST_CASE_NAME(suite_name)    \
+    __g_private_##suite_name##_test
+
+#define __TEST_CLASS_NAME(suite_name, test_name)    \
+    suite_name##_##test_name##_test
+
+#define __TEST_INSERT_RES(case_name, test_name)     \
+    __##case_name##_##test_name##_res
+
+/*
+ *  \brief  Implementation for TEST macro.
+ */
+
+#define __TEST_IMPL(case_name, test_name)                                   \
+    class __TEST_CLASS_NAME(case_name, test_name)                           \
+        : public ::testing::details::itest_suite                            \
+    {                                                                       \
+    public:                                                                 \
+        virtual void test_body() override final;                            \
+    };                                                                      \
+    [[maybe_unused]] static bool __TEST_INSERT_RES(case_name, test_name) =  \
+        ::testing::details::tester::insert(                                 \
+            __CVT_TO_STRING(case_name), __CVT_TO_STRING(test_name),         \
+            std::make_shared<__TEST_CLASS_NAME(case_name, test_name)>());   \
+    void __TEST_CLASS_NAME(case_name, test_name)::test_body()
+
+/*
+ *  \brief  Implementation for TEST_F macro.
+ */
 
 #define __TEST_F_IMPL(suite_name, test_name)                                \
     class __TEST_CLASS_NAME(suite_name, test_name) : public suite_name      \
@@ -51,5 +85,6 @@
             __TEST_CLASS_NAME(suite_name, test_name)::make_suite_ptr());    \
     void __TEST_CLASS_NAME(suite_name, test_name)::test_body()
 
-#endif /* _TESTING_TEST_F_DEFS_IMPL_H */
+
+#endif /* _TESTING_TESTDEFS_IMPL_H */
 

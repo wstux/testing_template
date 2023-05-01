@@ -25,10 +25,8 @@
 #ifndef _TESTING_TESTDEFS_H
 #define _TESTING_TESTDEFS_H
 
-#include "testing/details/commondefs.h"
 #include "testing/details/condition_defs.h"
-#include "testing/details/test_defs_impl.h"
-#include "testing/details/test_f_defs_impl.h"
+#include "testing/details/testdefs_impl.h"
 #include "testing/details/test_suite_interface.h"
 #include "testing/details/tester.h"
 #include "testing/testing_interface.h"
