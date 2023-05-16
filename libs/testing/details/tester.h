@@ -126,6 +126,13 @@ std::ostream& fail()
     return std::cerr;
 }
 
+class assert_helper final
+{
+public:
+    assert_helper() {}
+    void operator=(const std::ostream& /*msg*/) const {}
+};
+
 } // namespace details
 } // namespace testing
 

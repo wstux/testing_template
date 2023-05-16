@@ -28,18 +28,23 @@
 /*
  */
 
-#define __FAILURE_MESSAGE(cond) \
-    ::testing::details::fail() << __FILE__ << ":" << __LINE__ << ":" << std::endl   \
-                               << "    " << __PRETTY_FUNCTION__ << ":" << std::endl \
-                               << "Failure condition '" << #cond << "'" << std::endl
+#define __MESSAGE_IMPL(cond)                                    \
+    ::testing::details::fail()                                  \
+        << __FILE__ << ":" << __LINE__ << ":" << std::endl      \
+        << "    " << __PRETTY_FUNCTION__ << ":" << std::endl    \
+        << "Failure condition '" << #cond << "'" << std::endl
+
+#define __FAILURE_MESSAGE(cond)     __MESSAGE_IMPL(cond)
+
+#define __FATAL_FAILURE_MESSAGE(cond)                           \
+    ::testing::details::assert_helper() = __MESSAGE_IMPL(cond)
 
 /*
  */
 
-#define __CVT_TO_STRING(x)              \
-    []() -> std::string { return #x; }()
+#define __CVT_TO_STRING(x)  []() -> std::string { return #x; }()
 
-#define __TEST_CASE_NAME(suite_name)    \
+#define __TEST_CASE_NAME(suite_name)                \
     __g_private_##suite_name##_test
 
 #define __TEST_CLASS_NAME(suite_name, test_name)    \
@@ -48,7 +53,7 @@
 #define __TEST_INSERT_RES(case_name, test_name)     \
     __##case_name##_##test_name##_res
 
-#define __TEST_TYPE_PARAMS(suite_name)  \
+#define __TEST_TYPE_PARAMS(suite_name)              \
     __test_type_##suite_name##_param
 
 /*

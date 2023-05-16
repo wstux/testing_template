@@ -32,31 +32,42 @@
 /*
  */
 
-#define EXPECTED_FALSE(cond)        \
-    if (! (cond)) ;                 \
+#define ASSERT_FALSE(cond)                      \
+    if (! (cond)) ;                             \
+    else return __FATAL_FAILURE_MESSAGE(cond)
+
+#define ASSERT_TRUE(cond)                       \
+    if ((cond)) ;                               \
+    else return __FATAL_FAILURE_MESSAGE(cond)
+
+/*
+ */
+
+#define EXPECTED_FALSE(cond)                    \
+    if (! (cond)) ;                             \
     else __FAILURE_MESSAGE(cond)
 
-#define EXPECTED_TRUE(cond)         \
-    if ((cond)) ;                   \
+#define EXPECTED_TRUE(cond)                     \
+    if ((cond)) ;                               \
     else __FAILURE_MESSAGE(cond)
 
-#define EXPECTED_EQ(et, td)         \
-    if (et == td) ;                 \
+#define EXPECTED_EQ(et, td)                     \
+    if (et == td) ;                             \
     else __FAILURE_MESSAGE(cond)
 
 /*
  */
 
-#define TEST(case_name, test_name)          \
+#define TEST(case_name, test_name)              \
     __TEST_IMPL(case_name, test_name)
 
-#define TEST_F(test_fixture, test_name)     \
+#define TEST_F(test_fixture, test_name)         \
     __TEST_F_IMPL(test_fixture, test_name)
 
-#define TYPED_TEST_SUITE(case_name, types)  \
+#define TYPED_TEST_SUITE(case_name, types)      \
     __INIT_TYPED_TEST_SUITE(case_name, types)
 
-#define TYPED_TEST(case_name, types)        \
+#define TYPED_TEST(case_name, types)            \
     __TYPED_TEST_IMPL(case_name, types)
 
 #define RUN_ALL_TESTS() ::testing::details::tester::run_all_tests()
