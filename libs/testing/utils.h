@@ -11,7 +11,7 @@
 
 #include "testing/testdefs.h"
 
-namespace tests {
+namespace testing {
 namespace utils {
 
 /*
@@ -85,7 +85,8 @@ class base_tester : public ::testing::Test
 {
 public:
     explicit base_tester(const std::string& test_name)
-        : m_test_name(test_name)
+        : ::testing::Test()
+        , m_test_name(test_name)
     {}
 
     virtual void SetUp() override
@@ -105,6 +106,6 @@ private:
 #endif
 
 } // namespace utils
-} // namespace tests
+} // namespace testing
 
 #endif /* _TESTING_UTILS_H */

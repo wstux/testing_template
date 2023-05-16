@@ -116,14 +116,14 @@ class suite_decorator final : public itest_suite
 public:
     using ptr = std::shared_ptr<suite_decorator>;
 
-    explicit suite_decorator(const typename TType::ptr& p_test)
+    explicit suite_decorator(const std::shared_ptr<TType>& p_test)
         : m_p_test(p_test)
     {}
 
     virtual void test_body() override { m_p_test->run(); }
 
 private:
-    typename TType::ptr m_p_test;
+    std::shared_ptr<TType> m_p_test;
 };
 
 class test_failer final
