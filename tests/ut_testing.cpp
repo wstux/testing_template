@@ -68,42 +68,59 @@ TYPED_TEST_SUITE(typed_fixture_1, types_1);
 using types_2 = testing::Types<uint8_t, uint16_t, uint32_t>;
 TYPED_TEST_SUITE(typed_fixture_2, types_2);
 
-TEST(case_name_1, test_name_1)
+TEST(case_name_1, assert_true)
 {
-    EXPECTED_TRUE(1 == 1);
+    ASSERT_TRUE(2 == 1);
+    EXPECTED_TRUE(2 == 1);
 }
 
-TEST(case_name_1, test_name_2)
+TEST(case_name_1, assert_false)
+{
+    ASSERT_FALSE(1 == 1);
+    EXPECTED_TRUE(2 == 1);
+}
+
+TEST(case_name_1, expected_false)
 {
     EXPECTED_FALSE(1 == 2);
 }
 
-TEST(case_name_2, test_name_1)
+TEST(case_name_1, expected_true)
+{
+    EXPECTED_TRUE(1 == 1);
+}
+
+TEST(case_name_2, expected_false)
+{
+    EXPECTED_FALSE(1 == 2);
+}
+
+TEST(case_name_2, expected_eq)
 {
     EXPECTED_EQ(1, 1);
 }
 
-TEST_F(test_fixture_1, test_name_1)
+TEST_F(test_fixture_1, expected_true)
 {
     EXPECTED_TRUE(1 == 1);
 }
 
-TEST_F(test_fixture_1, test_name_2)
+TEST_F(test_fixture_1, expected_false)
 {
     EXPECTED_FALSE(1 == 2);
 }
 
-TEST_F(test_fixture_2, test_name_1)
+TEST_F(test_fixture_2, expected_true)
 {
     EXPECTED_TRUE(1 == 1);
 }
 
-TYPED_TEST(typed_fixture_1, test_name_1)
+TYPED_TEST(typed_fixture_1, expected_true)
 {
     EXPECTED_TRUE(1 == 1);
 }
 
-TYPED_TEST(typed_fixture_1, test_name_2)
+TYPED_TEST(typed_fixture_1, expected_false)
 {
     EXPECTED_FALSE(1 == 2);
 }
