@@ -97,7 +97,7 @@ public:
 
     virtual void TearDown() override { remove_dir(m_work_dir); }
 
-    const std::filesystem::path& WorkDir() const { return m_work_dir; }
+    const std::filesystem::path& work_dir() const { return m_work_dir; }
 
 private:
     const std::string m_test_name;
