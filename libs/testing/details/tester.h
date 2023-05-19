@@ -126,11 +126,11 @@ std::ostream& fail()
     return std::cerr;
 }
 
-class assert_helper final
+class report_helper final
 {
 public:
-    assert_helper() {}
-    void operator=(const std::ostream& /*msg*/) const {}
+    report_helper() {}
+    void operator=(std::ostream& msg) const { msg << std::endl; }
 };
 
 } // namespace details

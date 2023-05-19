@@ -29,7 +29,7 @@ inline std::filesystem::path create_tmp_dir(const std::string& prefix)
 {
     std::error_code err;
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path(err);
-    if (! err) {
+    if (err) {
         return {};
     }
 
@@ -39,7 +39,7 @@ inline std::filesystem::path create_tmp_dir(const std::string& prefix)
     }
     tmp_dir /= tmp_directory_name;
     std::filesystem::create_directory(tmp_dir, err);
-    if (! err) {
+    if (err) {
         return {};
     }
     return tmp_dir;

@@ -34,10 +34,12 @@
         << "    " << __PRETTY_FUNCTION__ << ":" << std::endl    \
         << "Failure condition '" << #cond << "'" << std::endl
 
-#define __FAILURE_MESSAGE(cond)     __MESSAGE_IMPL(cond)
+#define __FAILURE_MESSAGE(cond)                                 \
+    ::testing::details::report_helper() = __MESSAGE_IMPL(cond)
+
 
 #define __FATAL_FAILURE_MESSAGE(cond)                           \
-    ::testing::details::assert_helper() = __MESSAGE_IMPL(cond)
+    ::testing::details::report_helper() = __MESSAGE_IMPL(cond)
 
 /*
  */
