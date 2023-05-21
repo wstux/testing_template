@@ -28,15 +28,35 @@
 #include <memory>
 
 #include "testing/details/test_utils.h"
+#include "testing/details/tester.h"
+#include "testing/details/timer.h"
 #include "testing/details/typed_test_utils.h"
 
 namespace testing {
 
+class Environment
+{
+public:
+    virtual ~Environment() = default;
+
+    virtual void SetUp() {}
+
+    virtual void TearDown() {}
+};
+
+inline Environment* AddGlobalTestEnvironment(Environment* p_env)
+{
+    namespace ut = ::testing::details;
+
+    typename ut::env_decorator<Environment>::ptr p_env_dec =
+        std::make_shared<ut::env_decorator<Environment>>(p_env);
+    ut::tester::get_instance().add_env(p_env_dec);
+    return p_env;
+}
+
 class Test
 {
 public:
-    using ptr = std::shared_ptr<Test>;
-
     virtual ~Test() = default;
 
     void run()
