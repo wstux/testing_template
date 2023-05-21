@@ -22,13 +22,17 @@
 
 cmake_minimum_required (VERSION 3.10)
 
-set(TARGET_NAME "ut_testing")
+# Unit tests for testing library
+set(_ut_testing "ut_testing")
+add_executable(${_ut_testing} "ut_testing.cpp")
+target_link_libraries(${_ut_testing} testing)
+add_test(${_ut_testing} ${_ut_testing})
 
-add_executable(${TARGET_NAME} "ut_testing.cpp")
-add_test(${TARGET_NAME} ${TARGET_NAME})
-
-target_link_libraries(${TARGET_NAME} testing)
-#target_include_directories(${TARGET_NAME} PRIVATE ${LIB_INCLUDE_DIR})
+# Unit tests for performance testing library
+set(_ut_perf_testing "ut_perf_testing")
+add_executable(${_ut_perf_testing} "ut_perf_testing.cpp")
+target_link_libraries(${_ut_perf_testing} testing)
+add_test(${_ut_perf_testing} ${_ut_perf_testing})
 
 enable_testing()
 
