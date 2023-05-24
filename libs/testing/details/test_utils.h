@@ -121,6 +121,36 @@ inline bool is_case_failed() { return test_failer::get_instance().is_case_failed
 
 inline bool is_fatal() { return test_failer::get_instance().is_fatal(); }
 
+template<typename TEnv>
+class env_decorator final : public ienv
+{
+public:
+    using ptr = std::shared_ptr<env_decorator>;
+
+    explicit env_decorator(TEnv* p_env)
+        : m_p_env(p_env)
+    {}
+
+    virtual ~env_decorator() {}
+
+    virtual bool set_up() override
+    {
+        init_case();
+        m_p_env->SetUp();
+        return ! testing::details::is_fatal();
+    }
+
+    virtual bool tear_down() override
+    {
+        init_case();
+        m_p_env->TearDown();
+        return ! testing::details::is_fatal();
+    }
+
+private:
+    std::shared_ptr<TEnv> m_p_env;
+};
+
 class test_case final
 {
 public:
