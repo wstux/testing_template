@@ -40,16 +40,12 @@ namespace details {
 class tester final
 {
 public:
+    void add_env(ienv::ptr p_env) { m_envs.emplace_back(p_env); }
+
     bool insert_test(const case_name_t& case_name, const test_name_t& test_name,
                      const itest_suite::ptr& p_suite)
     {
-        std::map<case_name_t, size_t>::iterator it = m_case_names.find(case_name);
-        if (it == m_case_names.cend()) {
-            it = m_case_names.emplace(case_name, m_tests.size()).first;
-            m_tests.emplace_back(std::make_shared<test_case>(case_name));
-        }
-
-        const size_t idx = it->second;
+        const size_t idx = gen_test_id(case_name);
         return m_tests[idx]->insert_case(test_name, p_suite);
     }
 
@@ -57,6 +53,13 @@ public:
     {
         const size_t tests_cnt = tests_count();
         size_t failed_count = 0;
+
+        std::cout << "[==========] Setup environments." << std::endl;
+        for (const ienv::ptr& p_env : m_envs) {
+            if (! p_env->set_up()) {
+                return 1;
+            }
+        }
 
         std::cout << "[==========] Running " << tests_cnt << " tests from "
                   << m_tests.size() << " test suits." << std::endl;
@@ -72,6 +75,13 @@ public:
             std::cout << "[  FAILED  ] " << failed_count << " tests." << std::endl;
         }
         std::cout << "[  PASSED  ] " << tests_cnt << " tests." << std::endl;
+
+        std::cout << "[==========] Teardown environments." << std::endl;
+        for (const ienv::ptr& p_env : m_envs) {
+            if (! p_env->tear_down()) {
+                return 1;
+            }
+        }
 
         return (failed_count == 0) ? 0 : 1;
     }
@@ -105,6 +115,16 @@ public:
 private:
     tester() = default;
 
+    size_t gen_test_id(const case_name_t& case_name)
+    {
+        std::map<case_name_t, size_t>::iterator it = m_case_names.find(case_name);
+        if (it == m_case_names.cend()) {
+            it = m_case_names.emplace(case_name, m_tests.size()).first;
+            m_tests.emplace_back(std::make_shared<test_case>(case_name));
+        }
+        return it->second;
+    }
+
     size_t tests_count() const
     {
         return std::accumulate(m_tests.cbegin(), m_tests.cend(), 0,
@@ -114,6 +134,8 @@ private:
 private:
     std::map<case_name_t, size_t> m_case_names;
     std::vector<test_case::ptr> m_tests;
+
+    std::vector<ienv::ptr> m_envs;
 
     static std::unique_ptr<tester> m_p_instance;
 };

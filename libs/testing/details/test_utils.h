@@ -36,11 +36,22 @@
 namespace testing {
 namespace details {
 
+class ienv
+{
+public:
+    using ptr = std::shared_ptr<ienv>;
+
+    virtual ~ienv() {}
+    virtual bool set_up() = 0;
+    virtual bool tear_down() = 0;
+};
+
 class itest_suite
 {
 public:
     using ptr = std::shared_ptr<itest_suite>;
 
+    virtual ~itest_suite() {}
     virtual void test_body() = 0;
 };
 
