@@ -28,6 +28,15 @@
 
 #include "testing/perfdefs.h"
 
+class test_env : public ::testing::Environment
+{
+public:
+    virtual void SetUp() override
+    {
+        MESSAGE() << "test_env::SetUp()";
+    }
+};
+
 class test_fixture : public ::testing::Test
 {
 public:
@@ -74,5 +83,6 @@ TYPED_PERF_TEST(typed_fixture, perf)
 
 int main(int /*argc*/, char** /*argv*/)
 {
+    ::testing::AddGlobalTestEnvironment(new test_env());
     return RUN_ALL_PERF_TESTS();
 }

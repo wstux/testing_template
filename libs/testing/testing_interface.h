@@ -61,12 +61,30 @@ public:
 
     void run()
     {
-        testing::details::init_case();
+        namespace ut = ::testing::details;
+
+        ut::init_case();
         SetUp();
-        if (! testing::details::is_case_failed()) {
+        if (! ut::is_case_failed()) {
             test_body();
         }
         TearDown();
+    }
+
+    double run_perf()
+    {
+        namespace ut = ::testing::details;
+
+        ut::init_case();
+        SetUp();
+        double msecs = 0.0;
+        if (! ut::is_case_failed()) {
+            ut::timer sw(true);
+            test_body();
+            msecs = sw.value_ms();
+        }
+        TearDown();
+        return msecs;
     }
 
 protected:

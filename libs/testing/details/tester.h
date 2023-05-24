@@ -42,11 +42,53 @@ class tester final
 public:
     void add_env(ienv::ptr p_env) { m_envs.emplace_back(p_env); }
 
+    bool insert_perf_test(const case_name_t& case_name, const test_name_t& test_name,
+                          const itest_perf::ptr& p_suite)
+    {
+        const size_t idx = gen_test_id(case_name);
+        return m_tests[idx]->insert_perf(test_name, p_suite);
+    }
+
     bool insert_test(const case_name_t& case_name, const test_name_t& test_name,
                      const itest_suite::ptr& p_suite)
     {
         const size_t idx = gen_test_id(case_name);
         return m_tests[idx]->insert_case(test_name, p_suite);
+    }
+
+    int run_perf_tests() const
+    {
+        const size_t tests_cnt = tests_count();
+        size_t failed_count = 0;
+
+        std::cout << "[==========] Setup environments." << std::endl;
+        for (const ienv::ptr& p_env : m_envs) {
+            if (! p_env->set_up()) {
+                return 1;
+            }
+        }
+
+        std::cout << "[==========] Running " << tests_cnt << " performance "
+                  <<"tests from " << m_tests.size() << " tests." << std::endl;
+        timer total_sw(true);
+        for (const test_case::ptr& p_test : m_tests) {
+            failed_count += p_test->run_all_perfs();
+        }
+
+        const double total_ms = total_sw.value_ms();
+        std::cout << "[==========] " << tests_cnt << " performance tests from "
+                  << m_tests.size() << " tests ran (" << total_ms << " ms)."
+                  << std::endl;
+        std::cout << "[ FINISHED ] " << tests_cnt << " tests." << std::endl;
+
+        std::cout << "[==========] Teardown environments." << std::endl;
+        for (const ienv::ptr& p_env : m_envs) {
+            if (! p_env->tear_down()) {
+                return 1;
+            }
+        }
+
+        return (failed_count == 0) ? 0 : 1;
     }
 
     int run_tests() const
@@ -92,11 +134,25 @@ public:
         return get_instance().insert_test(case_name, test_name, p_suite);
     }
 
+    static bool insert_perf(const case_name_t& case_name, const test_name_t& test_name,
+                            const itest_perf::ptr& p_suite)
+    {
+        return get_instance().insert_perf_test(case_name, test_name, p_suite);
+    }
+
     template<template<typename> class TCase, typename TTypes>
     static bool insert_typed_case(const case_name_t& case_name,
                                   const test_name_t& test_name)
     {
         return typed_test_inserter<tester, TCase, TTypes>::insert(get_instance(),
+                                case_name, test_name, 0);
+    }
+
+    template<template<typename> class TCase, typename TTypes>
+    static bool insert_typed_perf(const case_name_t& case_name,
+                                  const test_name_t& test_name)
+    {
+        return typed_test_inserter<tester, TCase, TTypes>::insert_perf(get_instance(),
                                 case_name, test_name, 0);
     }
 
@@ -109,6 +165,8 @@ public:
         }
         return *m_p_instance.get();
     }
+
+    static int run_all_perf_tests() { return get_instance().run_perf_tests(); }
 
     static int run_all_tests() { return get_instance().run_tests(); }
 
