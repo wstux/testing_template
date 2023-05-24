@@ -148,6 +148,14 @@ std::ostream& fail()
     return std::cerr;
 }
 
+std::ostream& fatal()
+{
+    test_failer::get_instance().fatal();
+    return std::cerr;
+}
+
+std::ostream& msg() { return std::cout; }
+
 class report_helper final
 {
 public:

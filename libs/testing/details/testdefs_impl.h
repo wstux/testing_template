@@ -28,6 +28,12 @@
 /*
  */
 
+#define __FATAL_MESSAGE_IMPL(cond)                              \
+    ::testing::details::fatal()                                 \
+        << __FILE__ << ":" << __LINE__ << ":" << std::endl      \
+        << "    " << __PRETTY_FUNCTION__ << ":" << std::endl    \
+        << "Failure condition '" << #cond << "'" << std::endl
+
 #define __MESSAGE_IMPL(cond)                                    \
     ::testing::details::fail()                                  \
         << __FILE__ << ":" << __LINE__ << ":" << std::endl      \
@@ -37,9 +43,8 @@
 #define __FAILURE_MESSAGE(cond)                                 \
     ::testing::details::report_helper() = __MESSAGE_IMPL(cond)
 
-
 #define __FATAL_FAILURE_MESSAGE(cond)                           \
-    ::testing::details::report_helper() = __MESSAGE_IMPL(cond)
+    ::testing::details::report_helper() = __FATAL_MESSAGE_IMPL(cond)
 
 /*
  */

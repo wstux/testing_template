@@ -76,11 +76,19 @@ class test_failer final
 public:
     using ptr = std::shared_ptr<test_failer>;
 
-    void init_case() { m_is_ut_failed = false; }
+    void init_case()
+    {
+        m_is_ut_failed = false;
+        m_is_ut_fatal_failed = false;
+    }
 
     bool is_case_failed() { return m_is_ut_failed; }
 
     void fail() { m_is_ut_failed = true; }
+
+    void fatal() { m_is_ut_fatal_failed = m_is_ut_failed = true; }
+
+    bool is_fatal() { return m_is_ut_fatal_failed; }
 
     static test_failer& get_instance()
     {
@@ -94,6 +102,7 @@ public:
 
 private:
     bool m_is_ut_failed = false;
+    bool m_is_ut_fatal_failed = false;
 
     static std::unique_ptr<test_failer> m_p_instance;
 };
@@ -109,6 +118,8 @@ using test_list_t = std::vector<test_descr_t>;
 inline void init_case() { test_failer::get_instance().init_case(); }
 
 inline bool is_case_failed() { return test_failer::get_instance().is_case_failed(); }
+
+inline bool is_fatal() { return test_failer::get_instance().is_fatal(); }
 
 class test_case final
 {
