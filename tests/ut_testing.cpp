@@ -24,6 +24,15 @@
 
 #include "testing/testdefs.h"
 
+class test_env : public ::testing::Environment
+{
+public:
+    virtual void SetUp() override
+    {
+        EXPECTED_TRUE(13 == 1);
+    }
+};
+
 class test_fixture_1 : public ::testing::Test
 {
 public:
@@ -132,6 +141,7 @@ TYPED_TEST(typed_fixture_2, test_name_1)
 
 int main(int /*argc*/, char** /*argv*/)
 {
+    ::testing::AddGlobalTestEnvironment(new test_env());
     return RUN_ALL_TESTS();
 }
 

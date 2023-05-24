@@ -103,6 +103,29 @@ private:
     const std::string m_test_name;
     std::filesystem::path m_work_dir;
 };
+
+class base_env : public ::testing::Environment
+{
+public:
+    explicit base_env(const std::string& test_name)
+        : ::testing::Environment()
+        , m_test_name(test_name)
+    {}
+
+    virtual void SetUp() override
+    {
+        m_work_dir = create_tmp_dir(m_test_name + "_");
+        ASSERT_TRUE(! m_work_dir.empty());
+    }
+
+    virtual void TearDown() override { remove_dir(m_work_dir); }
+
+    const std::filesystem::path& work_dir() const { return m_work_dir; }
+
+private:
+    const std::string m_test_name;
+    std::filesystem::path m_work_dir;
+};
 #endif
 
 } // namespace utils
