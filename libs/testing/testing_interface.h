@@ -27,7 +27,6 @@
 
 #include <memory>
 
-#include "testing/details/perf_tester.h"
 #include "testing/details/test_utils.h"
 #include "testing/details/tester.h"
 #include "testing/details/timer.h"
@@ -54,20 +53,6 @@ inline Environment* AddGlobalTestEnvironment(Environment* p_env)
     ut::tester::get_instance().add_env(p_env_dec);
     return p_env;
 }
-
-namespace perf {
-
-inline Environment* AddGlobalTestEnvironment(Environment* p_env)
-{
-    namespace ut = ::testing::details;
-
-    typename ut::env_decorator<Environment>::ptr p_env_dec =
-        std::make_shared<ut::env_decorator<Environment>>(p_env);
-    ut::perf::tester::get_instance().add_env(p_env_dec);
-    return p_env;
-}
-
-} // namespace perf
 
 class Test
 {

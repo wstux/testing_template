@@ -46,15 +46,6 @@ public:
     virtual bool tear_down() = 0;
 };
 
-class itest_perf
-{
-public:
-    using ptr = std::shared_ptr<itest_perf>;
-
-    virtual ~itest_perf() {}
-    virtual void test_body() = 0;
-};
-
 class itest_suite
 {
 public:
@@ -65,7 +56,7 @@ public:
 };
 
 template<typename TType>
-class perf_decorator final : public itest_perf
+class perf_decorator final : public itest_suite
 {
 public:
     using ptr = std::shared_ptr<perf_decorator>;
@@ -134,20 +125,9 @@ private:
 
 std::unique_ptr<test_failer> test_failer::m_p_instance = nullptr;
 
-using case_name_t = std::string;
-using suite_name_t = std::string;
-using test_name_t = std::string;
-using type_name_t = std::string;
-using perf_test_descr_t = std::pair<test_name_t, itest_perf::ptr>;
-using perf_test_list_t = std::vector<perf_test_descr_t>;
-using test_descr_t = std::pair<test_name_t, itest_suite::ptr>;
-using test_list_t = std::vector<test_descr_t>;
-
-inline void init_case() { test_failer::get_instance().init_case(); }
-
+inline void init_case()      { test_failer::get_instance().init_case(); }
 inline bool is_case_failed() { return test_failer::get_instance().is_case_failed(); }
-
-inline bool is_fatal() { return test_failer::get_instance().is_fatal(); }
+inline bool is_fatal()       { return test_failer::get_instance().is_fatal(); }
 
 template<typename TEnv>
 class env_decorator final : public ienv

@@ -69,7 +69,7 @@
     public:                                                                    \
         using decorator = ::testing::details::perf_decorator<                  \
                     __PERF_CLASS_NAME(suite_name, test_name)>;                 \
-        using suite_ptr = ::testing::details::itest_perf::ptr;                 \
+        using suite_ptr = ::testing::details::itest_suite::ptr;                \
         __PERF_CLASS_NAME(suite_name, test_name)() {}                          \
         static suite_ptr make_suite_ptr()                                      \
         {                                                                      \
@@ -81,7 +81,7 @@
         virtual void test_body();                                              \
     };                                                                         \
     [[maybe_unused]] static bool __PERF_INSERT_RES(suite_name, test_name) =    \
-        ::testing::details::perf::tester::insert(                              \
+        ::testing::details::tester::insert(                                    \
             __CVT_TO_STRING(suite_name), __CVT_TO_STRING(test_name),           \
             __PERF_CLASS_NAME(suite_name, test_name)::make_suite_ptr());       \
     void __PERF_CLASS_NAME(suite_name, test_name)::test_body()
@@ -107,7 +107,7 @@
         virtual void test_body();                                              \
     };                                                                         \
     [[maybe_unused]] static bool __PERF_INSERT_RES(case_name, test_name) =     \
-        ::testing::details::perf::tester::insert_typed_case<                   \
+        ::testing::details::tester::insert_typed_case<                         \
                     __PERF_CLASS_NAME(case_name, test_name),                   \
                     typename __PERF_TYPE_PARAMS(case_name)::type>(             \
             __CVT_TO_STRING(case_name), __CVT_TO_STRING(test_name));           \
