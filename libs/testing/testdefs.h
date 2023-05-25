@@ -25,6 +25,8 @@
 #ifndef _TESTING_TESTDEFS_H
 #define _TESTING_TESTDEFS_H
 
+#undef __PERFORMANCE_TESTS__
+
 #include "testing/details/testdefs_impl.h"
 #include "testing/details/tester.h"
 #include "testing/testing_interface.h"

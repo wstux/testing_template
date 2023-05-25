@@ -59,6 +59,7 @@ class Test
 public:
     virtual ~Test() = default;
 
+#if ! defined(__PERFORMANCE_TESTS__)
     void __run()
     {
         namespace ut = ::testing::details;
@@ -75,7 +76,7 @@ public:
             std::cerr << ex.what() << std::endl;
         }
     }
-
+#else
     double __run_perf()
     {
         namespace ut = ::testing::details;
@@ -86,16 +87,19 @@ public:
         try {
             SetUp();
             if (! ut::is_case_failed()) {
-                ut::timer sw(true);
+                __register_sw(0, "test_body", ut::timer());
+                __get_sw("test_body").start();
                 test_body();
-                msecs = sw.value_ms();
+                __get_sw("test_body").pause();
             }
             TearDown();
+            __print_timers();
         } catch (const std::exception& ex) {
             std::cerr << ex.what() << std::endl;
         }
         return msecs;
     }
+#endif
 
 protected:
     Test() {}
@@ -104,8 +108,47 @@ protected:
 
     virtual void TearDown() {}
 
+#if defined(__PERFORMANCE_TESTS__)
+    details::timer& __get_sw(const std::string& sw_name) { return m_timers.at(sw_name); }
+
+    void __register_sw(size_t lvl, const std::string& sw_name, details::timer&& sw)
+    {
+        m_timers.emplace(sw_name, std::move(sw));
+        if (m_hierarchy.size() <= lvl) {
+            m_hierarchy.resize(lvl + 1);
+        }
+        m_hierarchy[lvl].emplace_back(sw_name);
+    }
+#endif
+
 private:
     virtual void test_body() = 0;
+
+#if defined(__PERFORMANCE_TESTS__)
+    void __print_timers()
+    {
+        const std::function<std::string(size_t)> shift_fn = [] (size_t h) -> std::string {
+            std::string shift = "  ";
+            for (size_t i = 0; i < h; ++i) {
+                shift += "  ";
+            }
+            return shift;
+        };
+
+        for (size_t i = 0; i < m_hierarchy.size(); ++i) {
+            const std::list<std::string>& timers = m_hierarchy[i];
+            const std::string shift = shift_fn(i);
+            for (const std::string& sw_name : timers) {
+                std::cout << "[   PERF   ] " << shift << sw_name << " time: "
+                          << __get_sw(sw_name).value_ms() << " msecs" << std::endl;
+            }
+        }
+    }
+
+private:
+    std::unordered_map<std::string, details::timer> m_timers;
+    std::vector<std::list<std::string>> m_hierarchy;
+#endif
 };
 
 template<typename T1  = details::none_t, typename T2  = details::none_t,

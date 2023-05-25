@@ -59,26 +59,34 @@ TYPED_PERF_TEST_SUITE(typed_fixture, types);
 
 PERF_TEST_F(test_fixture, perf)
 {
+    PERF_INIT_TIMER(test_perf);
+
     std::vector<size_t> v;
     for (size_t i = 0; i < 10000; ++i) {
         v.emplace_back(i);
     }
     size_t dummy = 0;
     for (size_t i = 0; i < 10000; ++i) {
+        PERF_START_TIMER(test_perf);
         dummy += v[i];
+        PERF_PAUSE_TIMER(test_perf);
     }
 }
 
 TYPED_PERF_TEST(typed_fixture, perf)
 {
+    PERF_INIT_TIMER(test);
+
     TypeParam v;
     for (size_t i = 0; i < 10000; ++i) {
         v.emplace_back(i);
     }
     size_t dummy = 0;
+    PERF_START_TIMER(test);
     for (typename TypeParam::const_iterator it = v.cbegin(); it != v.cend(); ++it) {
         dummy += *it;
     }
+    PERF_PAUSE_TIMER(test);
 }
 
 int main(int /*argc*/, char** /*argv*/)

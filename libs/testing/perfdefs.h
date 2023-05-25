@@ -25,9 +25,13 @@
 #ifndef _TESTING_PERFDEFS_H
 #define _TESTING_PERFDEFS_H
 
+#define __PERFORMANCE_TESTS__
+
 #include "testing/details/tester.h"
 #include "testing/details/perfdefs_impl.h"
 #include "testing/testing_interface.h"
+
+#undef __PERFORMANCE_TESTS__
 
 /*
  */
@@ -44,6 +48,32 @@
 #define PERF_ASSERT_TRUE(cond)                      \
     if ((cond)) ;                                   \
     else return __FATAL_PERF_MESSAGE(cond)
+
+/*
+ */
+
+#define PERF_INIT_HIERARCHY_TIMER(lvl, sw_name)     \
+    __PERF_INIT_HIERARCHY_TIMER(lvl, sw_name)
+
+#define PERF_INIT_TIMER(sw_name)                    \
+    __PERF_INIT_HIERARCHY_TIMER(1, sw_name)
+
+#define PERF_START_TIMER(sw_name)                   \
+    __PERF_START_TIMER_IMPL(sw_name)
+
+#define PERF_PAUSE_TIMER(sw_name)                   \
+    __PERF_PAUSE_TIMER_IMPL(sw_name)
+
+#define PERF_CHECK_TIME(sw_name, funk)              \
+    __PERF_START_TIMER_IMPL(sw_name);               \
+    (funk);                                         \
+    __PERF_PAUSE_TIMER_IMPL(sw_name)
+
+#define PERF_CHECK_TIME_ONCE(sw_name, funk)         \
+    __PERF_INIT_HIERARCHY_TIMER(1, sw_name);        \
+    __PERF_START_TIMER_IMPL(sw_name);               \
+    (funk);                                         \
+    __PERF_PAUSE_TIMER_IMPL(sw_name)
 
 /*
  */
