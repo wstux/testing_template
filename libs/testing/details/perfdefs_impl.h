@@ -60,6 +60,18 @@
     __test_type_##suite_name##_perf_param
 
 /*
+ */
+
+#define __PERF_INIT_HIERARCHY_TIMER(lvl, sw_name)                   \
+    this->__register_sw(lvl, #sw_name, std::move(::testing::details::timer()))
+
+#define __PERF_START_TIMER_IMPL(sw_name)                            \
+    this->__get_sw(#sw_name).start()
+
+#define __PERF_PAUSE_TIMER_IMPL(sw_name)                            \
+    this->__get_sw(#sw_name).pause()
+
+/*
  *  \brief  Implementation for TEST macro.
  */
 
