@@ -25,14 +25,25 @@
 #ifndef _TESTING_PERFDEFS_H
 #define _TESTING_PERFDEFS_H
 
+#include "testing/details/tester.h"
 #include "testing/details/perfdefs_impl.h"
-#include "testing/details/perf_tester.h"
 #include "testing/testing_interface.h"
 
 /*
  */
 
 #define MESSAGE()   __PERF_MESSAGE()
+
+/*
+ */
+
+#define PERF_ASSERT_FALSE(cond)                     \
+    if (! (cond)) ;                                 \
+    else return __FATAL_PERF_MESSAGE(cond)
+
+#define PERF_ASSERT_TRUE(cond)                      \
+    if ((cond)) ;                                   \
+    else return __FATAL_PERF_MESSAGE(cond)
 
 /*
  */
@@ -46,6 +57,6 @@
 #define TYPED_PERF_TEST(case_name, types)           \
     __TYPED_PERF_TEST_IMPL(case_name, types)
 
-#define RUN_ALL_PERF_TESTS() ::testing::details::perf::tester::run_all_tests()
+#define RUN_ALL_PERF_TESTS() ::testing::details::tester::run_all_tests()
 
 #endif /* _TESTING_PERFDEFS_H */

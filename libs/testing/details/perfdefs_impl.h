@@ -28,10 +28,19 @@
 /*
  */
 
-#define __PERF_MESSAGE_IMPL()   ::testing::details::perf::msg()
+#define __PERF_FATAL_MESSAGE_IMPL(cond)                         \
+    ::testing::details::fatal()                                 \
+        << __FILE__ << ":" << __LINE__ << ":" << std::endl      \
+        << "    " << __PRETTY_FUNCTION__ << ":" << std::endl    \
+        << "Failure condition '" << #cond << "'" << std::endl
+
+#define __PERF_MESSAGE_IMPL()   ::testing::details::msg()
 
 #define __PERF_MESSAGE()                            \
-    ::testing::details::perf::report_helper() = __PERF_MESSAGE_IMPL()
+    ::testing::details::report_helper() = __PERF_MESSAGE_IMPL()
+
+#define __FATAL_PERF_MESSAGE(cond)                           \
+    ::testing::details::report_helper() = __PERF_FATAL_MESSAGE_IMPL(cond)
 
 /*
  */
@@ -58,7 +67,7 @@
     class __PERF_CLASS_NAME(suite_name, test_name) : public suite_name         \
     {                                                                          \
     public:                                                                    \
-        using decorator = ::testing::details::suite_decorator<                 \
+        using decorator = ::testing::details::perf_decorator<                  \
                     __PERF_CLASS_NAME(suite_name, test_name)>;                 \
         using suite_ptr = ::testing::details::itest_suite::ptr;                \
         __PERF_CLASS_NAME(suite_name, test_name)() {}                          \
@@ -72,7 +81,7 @@
         virtual void test_body();                                              \
     };                                                                         \
     [[maybe_unused]] static bool __PERF_INSERT_RES(suite_name, test_name) =    \
-        ::testing::details::perf::tester::insert(                              \
+        ::testing::details::tester::insert(                                    \
             __CVT_TO_STRING(suite_name), __CVT_TO_STRING(test_name),           \
             __PERF_CLASS_NAME(suite_name, test_name)::make_suite_ptr());       \
     void __PERF_CLASS_NAME(suite_name, test_name)::test_body()
@@ -89,13 +98,16 @@
     class __PERF_CLASS_NAME(case_name, test_name)                              \
         : public case_name<TTypeParam>                                         \
     {                                                                          \
+    public:                                                                    \
+        using __decorator = ::testing::details::perf_decorator<                \
+                    __PERF_CLASS_NAME(case_name, test_name)>;                  \
     private:                                                                   \
         using TestFixture = case_name<TTypeParam>;                             \
         using TypeParam = TTypeParam;                                          \
         virtual void test_body();                                              \
     };                                                                         \
     [[maybe_unused]] static bool __PERF_INSERT_RES(case_name, test_name) =     \
-        ::testing::details::perf::tester::insert_typed_case<                   \
+        ::testing::details::tester::insert_typed_case<                         \
                     __PERF_CLASS_NAME(case_name, test_name),                   \
                     typename __PERF_TYPE_PARAMS(case_name)::type>(             \
             __CVT_TO_STRING(case_name), __CVT_TO_STRING(test_name));           \

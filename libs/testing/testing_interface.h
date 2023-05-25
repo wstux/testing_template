@@ -28,25 +28,73 @@
 #include <memory>
 
 #include "testing/details/test_utils.h"
+#include "testing/details/tester.h"
+#include "testing/details/timer.h"
 #include "testing/details/typed_test_utils.h"
 
 namespace testing {
 
+class Environment
+{
+public:
+    virtual ~Environment() = default;
+
+    virtual void SetUp() {}
+
+    virtual void TearDown() {}
+};
+
+inline Environment* AddGlobalTestEnvironment(Environment* p_env)
+{
+    namespace ut = ::testing::details;
+
+    typename ut::env_decorator<Environment>::ptr p_env_dec =
+        std::make_shared<ut::env_decorator<Environment>>(p_env);
+    ut::tester::get_instance().add_env(p_env_dec);
+    return p_env;
+}
+
 class Test
 {
 public:
-    using ptr = std::shared_ptr<Test>;
-
     virtual ~Test() = default;
 
-    void run()
+    void __run()
     {
-        testing::details::init_case();
-        SetUp();
-        if (! testing::details::is_case_failed()) {
-            test_body();
+        namespace ut = ::testing::details;
+
+        ut::init_case();
+
+        try {
+            SetUp();
+            if (! ut::is_case_failed()) {
+                test_body();
+            }
+            TearDown();
+        } catch (const std::exception& ex) {
+            std::cerr << ex.what() << std::endl;
         }
-        TearDown();
+    }
+
+    double __run_perf()
+    {
+        namespace ut = ::testing::details;
+
+        ut::init_case();
+
+        double msecs = 0.0;
+        try {
+            SetUp();
+            if (! ut::is_case_failed()) {
+                ut::timer sw(true);
+                test_body();
+                msecs = sw.value_ms();
+            }
+            TearDown();
+        } catch (const std::exception& ex) {
+            std::cerr << ex.what() << std::endl;
+        }
+        return msecs;
     }
 
 protected:
