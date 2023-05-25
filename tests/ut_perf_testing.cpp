@@ -83,6 +83,6 @@ TYPED_PERF_TEST(typed_fixture, perf)
 
 int main(int /*argc*/, char** /*argv*/)
 {
-    ::testing::AddGlobalTestEnvironment(new test_env());
+    ::testing::perf::AddGlobalTestEnvironment(new test_env());
     return RUN_ALL_PERF_TESTS();
 }

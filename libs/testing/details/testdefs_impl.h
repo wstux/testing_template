@@ -120,6 +120,9 @@
     class __TEST_CLASS_NAME(case_name, test_name)                           \
         : public case_name<TTypeParam>                                      \
     {                                                                       \
+    public:                                                                 \
+        using __decorator = ::testing::details::suite_decorator<            \
+                    __TEST_CLASS_NAME(case_name, test_name)>;               \
     private:                                                                \
         using TestFixture = case_name<TTypeParam>;                          \
         using TypeParam = TTypeParam;                                       \

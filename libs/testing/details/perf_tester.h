@@ -22,30 +22,31 @@
  * THE SOFTWARE.
  */
 
-#ifndef _TESTING_TESTER_H
-#define _TESTING_TESTER_H
+#ifndef _TESTING_PERF_TESTER_H
+#define _TESTING_PERF_TESTER_H
 
 #include "testing/details/common_tester.h"
+#include "testing/details/test_utils.h"
 
 namespace testing {
 namespace details {
+namespace perf {
 
-class tester final : public common_tester<itest_suite>
+class tester final : public common_tester<itest_perf>
 {
-    using base = common_tester<itest_suite>;
+    using base = common_tester<itest_perf>;
 
 public:
     void add_env(ienv::ptr p_env) { base::add_env(p_env); }
 
     static bool insert(const std::string& case_name, const std::string& test_name,
-                       const itest_suite::ptr& p_suite)
+                       const itest_perf::ptr& p_suite)
     {
         return get_instance().insert_test(case_name, test_name, p_suite);
     }
 
     template<template<typename> class TCase, typename TTypes>
-    static bool insert_typed_case(const std::string& case_name,
-                                  const std::string& test_name)
+    static bool insert_typed_case(const std::string& case_name, const std::string& test_name)
     {
         return typed_test_inserter<tester, TCase, TTypes>::insert(get_instance(),
                                 case_name, test_name, 0);
@@ -72,8 +73,8 @@ private:
 
 std::unique_ptr<tester> tester::m_p_instance = nullptr;
 
+} // namespace perf
 } // namespace details
 } // namespace testing
 
-#endif /* _TESTING_TESTER_H */
-
+#endif /* _TESTING_PERF_TESTER_H */
