@@ -26,6 +26,7 @@
 #define _TESTING_TESTING_INTERFACE_H
 
 #include <functional>
+#include <list>
 #include <memory>
 #include <unordered_map>
 
