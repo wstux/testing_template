@@ -247,18 +247,18 @@ inline bool remove_dir(const std::string& dir)
         return info.utime + info.stime;
     }
 
-    inline double cpu_time(const std::string& stat_path)
+    inline double cpu_time_msecs(const std::string& stat_path)
     {
         int ticks = cpu_ticks(stat_path);
         if (ticks == -1) {
             return 0.0;
         }
 
-        static const long kClockTicks = ::sysconf(_SC_CLK_TCK);
-        return (((double)ticks) / (double)kClockTicks);
+        static const long kClockTicksPerSec = ::sysconf(_SC_CLK_TCK);
+        return (((double)ticks) / ((double)kClockTicksPerSec / 1000.0));
     }
 
-    inline double cpu_time_self() { return cpu_time("/proc/self/stat"); }
+    inline double cpu_time_msecs_self() { return cpu_time_msecs("/proc/self/stat"); }
 
     inline int mem_usage()
     {

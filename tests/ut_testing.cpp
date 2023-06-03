@@ -31,8 +31,8 @@ public:
     virtual void SetUp() override
     {
         EXPECT_TRUE(13 == 1) << "expected fail";
-        EXPECT_TRUE(::testing::utils::cpu_time_self() < 0)
-            << "expected fail; " << ::testing::utils::cpu_time_self();
+        EXPECT_TRUE(::testing::utils::cpu_time_msecs_self() < 0)
+            << "expected fail; " << ::testing::utils::cpu_time_msecs_self();
     }
 };
 

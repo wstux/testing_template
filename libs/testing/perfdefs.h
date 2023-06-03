@@ -38,6 +38,8 @@
 
 #define MESSAGE()   __PERF_MESSAGE()
 
+#define PERF_MESSAGE()   __PERF_MESSAGE() << "[   PERF   ]   "
+
 /*
  */
 
