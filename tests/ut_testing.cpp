@@ -30,36 +30,36 @@ class test_env : public ::testing::Environment
 public:
     virtual void SetUp() override
     {
-        EXPECTED_TRUE(13 == 1) << "expected fail";
-        EXPECTED_TRUE(::testing::utils::cpu_time_self() < 0)
-            << << "expected fail; " << ::testing::utils::cpu_time_self();
+        EXPECT_TRUE(13 == 1) << "expected fail";
+        EXPECT_TRUE(::testing::utils::cpu_time_self() < 0)
+            << "expected fail; " << ::testing::utils::cpu_time_self();
     }
 };
 
 class test_fixture_1 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override { EXPECTED_TRUE(1 == 1); }
+    virtual void SetUp() override { EXPECT_TRUE(1 == 1); }
 };
 
 class test_fixture_2 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override { EXPECTED_TRUE(1 == 2) << "expected fail"; }
+    virtual void SetUp() override { EXPECT_TRUE(1 == 2) << "expected fail"; }
 };
 
 template<typename TType>
 class typed_fixture_1 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override { EXPECTED_TRUE(1 == 1); }
+    virtual void SetUp() override { EXPECT_TRUE(1 == 1); }
 };
 
 template<typename TType>
 class typed_fixture_2 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override { EXPECTED_TRUE(1 == 1); }
+    virtual void SetUp() override { EXPECT_TRUE(1 == 1); }
 };
 
 using types_1 = testing::Types<uint8_t, uint16_t, uint32_t>;
@@ -71,63 +71,63 @@ TYPED_TEST_SUITE(typed_fixture_2, types_2);
 TEST(case_name_1, assert_true)
 {
     ASSERT_TRUE(2 == 1) << "expected fail";
-    EXPECTED_TRUE(2 == 1) << "expected fail";
+    EXPECT_TRUE(2 == 1) << "expected fail";
 }
 
 TEST(case_name_1, assert_false)
 {
     ASSERT_FALSE(1 == 1) << "expected fail";
-    EXPECTED_TRUE(2 == 1) << "expected fail";
+    EXPECT_TRUE(2 == 1) << "expected fail";
 }
 
-TEST(case_name_1, expected_false)
+TEST(case_name_1, expect_false)
 {
-    EXPECTED_FALSE(1 == 2);
+    EXPECT_FALSE(1 == 2);
 }
 
-TEST(case_name_1, expected_true)
+TEST(case_name_1, expect_true)
 {
-    EXPECTED_TRUE(1 == 1);
+    EXPECT_TRUE(1 == 1);
 }
 
-TEST(case_name_2, expected_false)
+TEST(case_name_2, expect_false)
 {
-    EXPECTED_FALSE(1 == 2);
+    EXPECT_FALSE(1 == 2);
 }
 
-TEST(case_name_2, expected_eq)
+TEST(case_name_2, expect_eq)
 {
-    EXPECTED_EQ(1, 1);
+    EXPECT_EQ(1, 1);
 }
 
-TEST_F(test_fixture_1, expected_true)
+TEST_F(test_fixture_1, expect_true)
 {
-    EXPECTED_TRUE(1 == 1);
+    EXPECT_TRUE(1 == 1);
 }
 
-TEST_F(test_fixture_1, expected_false)
+TEST_F(test_fixture_1, expect_false)
 {
-    EXPECTED_FALSE(1 == 2);
+    EXPECT_FALSE(1 == 2);
 }
 
-TEST_F(test_fixture_2, expected_true)
+TEST_F(test_fixture_2, expect_true)
 {
-    EXPECTED_TRUE(1 == 1);
+    EXPECT_TRUE(1 == 1);
 }
 
-TYPED_TEST(typed_fixture_1, expected_true)
+TYPED_TEST(typed_fixture_1, expect_true)
 {
-    EXPECTED_TRUE(1 == 1);
+    EXPECT_TRUE(1 == 1);
 }
 
-TYPED_TEST(typed_fixture_1, expected_false)
+TYPED_TEST(typed_fixture_1, expect_false)
 {
-    EXPECTED_FALSE(1 == 2);
+    EXPECT_FALSE(1 == 2);
 }
 
 TYPED_TEST(typed_fixture_2, test_name_1)
 {
-    EXPECTED_TRUE(1 == 1);
+    EXPECT_TRUE(1 == 1);
 }
 
 int main(int /*argc*/, char** /*argv*/)

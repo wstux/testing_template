@@ -45,15 +45,15 @@
 /*
  */
 
-#define EXPECTED_FALSE(cond)                    \
+#define EXPECT_FALSE(cond)                      \
     if (! (cond)) ;                             \
     else __FAILURE_MESSAGE(cond)
 
-#define EXPECTED_TRUE(cond)                     \
+#define EXPECT_TRUE(cond)                       \
     if ((cond)) ;                               \
     else __FAILURE_MESSAGE(cond)
 
-#define EXPECTED_EQ(et, td)                     \
+#define EXPECT_EQ(et, td)                       \
     if (et == td) ;                             \
     else __FAILURE_MESSAGE(cond)
 
