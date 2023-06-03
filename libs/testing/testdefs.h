@@ -42,20 +42,101 @@
     if ((cond)) ;                               \
     else return __FATAL_FAILURE_MESSAGE(cond)
 
-/*
- */
-
-#define EXPECTED_FALSE(cond)                    \
+#define EXPECT_FALSE(cond)                      \
     if (! (cond)) ;                             \
     else __FAILURE_MESSAGE(cond)
 
-#define EXPECTED_TRUE(cond)                     \
+#define EXPECT_TRUE(cond)                       \
     if ((cond)) ;                               \
     else __FAILURE_MESSAGE(cond)
 
-#define EXPECTED_EQ(et, td)                     \
+/*
+ */
+
+#define EXPECT_EQ(et, td)                       \
     if (et == td) ;                             \
     else __FAILURE_MESSAGE(cond)
+
+/*
+ */
+
+#define ASSERT_THROW(cond, expected_exception)                          \
+    if (true) {                                                         \
+        bool is_caught = false;                                         \
+        try {                                                           \
+            (cond);                                                     \
+        } catch (const expected_exception&) {                           \
+            is_caught = true;                                           \
+        } catch (...) {                                                 \
+            ::testing::details::fatal()                                 \
+                << "Expected: " #cond " throws an exception of type "   \
+                << #expected_exception "." << std::endl                 \
+                << "Actual: it throws a different type." << std::endl;  \
+            goto __GOTO_LABEL(__label_test_expect_throw_, __LINE__);    \
+        }                                                               \
+        if (! is_caught) {                                              \
+            ::testing::details::fatal()                                 \
+                << "Expected: " #cond " throws an exception of type "   \
+                << #expected_exception "." << std::endl                 \
+                << "Actual: it throws nothing." << std::endl;           \
+            goto __GOTO_LABEL(__label_test_expect_throw_, __LINE__);    \
+        }                                                               \
+    } else                                                              \
+        __GOTO_LABEL(__label_test_expect_throw_, __LINE__):             \
+            return __FATAL_FAILURE_MESSAGE(cond)
+
+#define ASSERT_NO_THROW(cond)                                           \
+    if (true) {                                                         \
+        try {                                                           \
+            (cond);                                                     \
+        } catch (...) {                                                 \
+            goto __GOTO_LABEL(__label_test_no_throw_, __LINE__);        \
+        }                                                               \
+    } else                                                              \
+        __GOTO_LABEL(__label_test_no_throw_, __LINE__):                 \
+            return __FATAL_FAILURE_MESSAGE(cond)                        \
+                << "Expected: " #cond " doesn't throw an "              \
+                << "exception." << std::endl << "Actual: it throws."    \
+                << std::endl
+
+#define EXPECT_THROW(cond, expected_exception)                          \
+    if (true) {                                                         \
+        bool is_caught = false;                                         \
+        try {                                                           \
+            (cond);                                                     \
+        } catch (const expected_exception&) {                           \
+            is_caught = true;                                           \
+        } catch (...) {                                                 \
+            ::testing::details::fail()                                  \
+                << "Expected: " #cond " throws an exception of type "   \
+                << #expected_exception "." << std::endl                 \
+                << "Actual: it throws a different type." << std::endl;  \
+            goto __GOTO_LABEL(__label_test_expect_throw_, __LINE__);    \
+        }                                                               \
+        if (! is_caught) {                                              \
+            ::testing::details::fatal()                                 \
+                << "Expected: " #cond " throws an exception of type "   \
+                << #expected_exception "." << std::endl                 \
+                << "Actual: it throws nothing." << std::endl;           \
+            goto __GOTO_LABEL(__label_test_expect_throw_, __LINE__);    \
+        }                                                               \
+    } else                                                              \
+        __GOTO_LABEL(__label_test_expect_throw_, __LINE__):             \
+            return __FAILURE_MESSAGE(cond)
+
+#define EXPECT_NO_THROW(cond)                                           \
+    if (true) {                                                         \
+        try {                                                           \
+            (cond);                                                     \
+        } catch (...) {                                                 \
+            goto __GOTO_LABEL(__label_test_no_throw_, __LINE__);        \
+        }                                                               \
+    } else                                                              \
+        __GOTO_LABEL(__label_test_no_throw_, __LINE__):                 \
+            __FAILURE_MESSAGE(cond)                                     \
+                << "Expected: " #cond " doesn't throw an "              \
+                << "exception." << std::endl << "Actual: it throws."    \
+                << std::endl
 
 /*
  */

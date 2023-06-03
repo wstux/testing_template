@@ -23,52 +23,43 @@
  */
 
 #include "testing/testdefs.h"
+#include "testing/utils.h"
 
 class test_env : public ::testing::Environment
 {
 public:
     virtual void SetUp() override
     {
-        EXPECTED_TRUE(13 == 1);
+        EXPECT_TRUE(13 == 1) << "expected fail";
+        EXPECT_TRUE(::testing::utils::cpu_time_self() < 0)
+            << "expected fail; " << ::testing::utils::cpu_time_self();
     }
 };
 
 class test_fixture_1 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override
-    {
-        EXPECTED_TRUE(1 == 1);
-    }
+    virtual void SetUp() override { EXPECT_TRUE(1 == 1); }
 };
 
 class test_fixture_2 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override
-    {
-        EXPECTED_TRUE(1 == 2);
-    }
+    virtual void SetUp() override { EXPECT_TRUE(1 == 2) << "expected fail"; }
 };
 
 template<typename TType>
 class typed_fixture_1 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override
-    {
-        EXPECTED_TRUE(1 == 1);
-    }
+    virtual void SetUp() override { EXPECT_TRUE(1 == 1); }
 };
 
 template<typename TType>
 class typed_fixture_2 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override
-    {
-        EXPECTED_TRUE(1 == 1);
-    }
+    virtual void SetUp() override { EXPECT_TRUE(1 == 1); }
 };
 
 using types_1 = testing::Types<uint8_t, uint16_t, uint32_t>;
@@ -79,64 +70,98 @@ TYPED_TEST_SUITE(typed_fixture_2, types_2);
 
 TEST(case_name_1, assert_true)
 {
-    ASSERT_TRUE(2 == 1);
-    EXPECTED_TRUE(2 == 1);
+    ASSERT_TRUE(2 == 1) << "expected fail";
+    EXPECT_TRUE(2 == 1) << "expected fail";
 }
 
 TEST(case_name_1, assert_false)
 {
-    ASSERT_FALSE(1 == 1);
-    EXPECTED_TRUE(2 == 1);
+    ASSERT_FALSE(1 == 1) << "expected fail";
+    EXPECT_TRUE(2 == 1) << "expected fail";
 }
 
-TEST(case_name_1, expected_false)
+TEST(case_name_1, expect_false)
 {
-    EXPECTED_FALSE(1 == 2);
+    EXPECT_FALSE(1 == 2);
 }
 
-TEST(case_name_1, expected_true)
+TEST(case_name_1, expect_true)
 {
-    EXPECTED_TRUE(1 == 1);
+    EXPECT_TRUE(1 == 1);
 }
 
-TEST(case_name_2, expected_false)
+TEST(case_name_1, assert_throw)
 {
-    EXPECTED_FALSE(1 == 2);
+    std::function<void()> throw_fn = []() { throw std::runtime_error(""); };
+
+    ASSERT_THROW(throw_fn, std::runtime_error);
+    ASSERT_THROW(1 == 1, std::runtime_error) << "expected fail";
+    EXPECT_TRUE(2 == 1) << "expected fail";
 }
 
-TEST(case_name_2, expected_eq)
+TEST(case_name_1, assert_no_throw)
 {
-    EXPECTED_EQ(1, 1);
+    std::function<void()> throw_fn = []() { throw std::runtime_error(""); };
+
+    ASSERT_NO_THROW(1 == 1);
+    ASSERT_NO_THROW(throw_fn) << "expected fail";
+    EXPECT_TRUE(2 == 1) << "expected fail";
 }
 
-TEST_F(test_fixture_1, expected_true)
+TEST(case_name_1, expect_throw)
 {
-    EXPECTED_TRUE(1 == 1);
+    std::function<void()> throw_fn = []() { throw std::runtime_error(""); };
+
+    EXPECT_THROW(throw_fn, std::runtime_error);
+    EXPECT_THROW(1 == 1, std::runtime_error) << "expected fail";
 }
 
-TEST_F(test_fixture_1, expected_false)
+TEST(case_name_1, expect_no_throw)
 {
-    EXPECTED_FALSE(1 == 2);
+    std::function<void()> throw_fn = []() { throw std::runtime_error(""); };
+
+    EXPECT_NO_THROW(1 == 1);
+    EXPECT_NO_THROW(throw_fn) << "expected fail";
 }
 
-TEST_F(test_fixture_2, expected_true)
+TEST(case_name_2, expect_false)
 {
-    EXPECTED_TRUE(1 == 1);
+    EXPECT_FALSE(1 == 2);
 }
 
-TYPED_TEST(typed_fixture_1, expected_true)
+TEST(case_name_2, expect_eq)
 {
-    EXPECTED_TRUE(1 == 1);
+    EXPECT_EQ(1, 1);
 }
 
-TYPED_TEST(typed_fixture_1, expected_false)
+TEST_F(test_fixture_1, expect_true)
 {
-    EXPECTED_FALSE(1 == 2);
+    EXPECT_TRUE(1 == 1);
+}
+
+TEST_F(test_fixture_1, expect_false)
+{
+    EXPECT_FALSE(1 == 2);
+}
+
+TEST_F(test_fixture_2, expect_true)
+{
+    EXPECT_TRUE(1 == 1);
+}
+
+TYPED_TEST(typed_fixture_1, expect_true)
+{
+    EXPECT_TRUE(1 == 1);
+}
+
+TYPED_TEST(typed_fixture_1, expect_false)
+{
+    EXPECT_FALSE(1 == 2);
 }
 
 TYPED_TEST(typed_fixture_2, test_name_1)
 {
-    EXPECTED_TRUE(1 == 1);
+    EXPECT_TRUE(1 == 1);
 }
 
 int main(int /*argc*/, char** /*argv*/)

@@ -25,7 +25,9 @@
 #ifndef _TESTING_TESTING_INTERFACE_H
 #define _TESTING_TESTING_INTERFACE_H
 
+#include <functional>
 #include <memory>
+#include <unordered_map>
 
 #include "testing/details/test_utils.h"
 #include "testing/details/tester.h"
