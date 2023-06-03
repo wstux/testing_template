@@ -51,6 +51,9 @@
 
 #define __CVT_TO_STRING(x)  []() -> std::string { return #x; }()
 
+#define __GOTO_LABEL_IMPL(label, line)  label ## line
+#define __GOTO_LABEL(label, line)       __GOTO_LABEL_IMPL(label, line)
+
 #define __TEST_CASE_NAME(suite_name)                \
     __g_private_##suite_name##_test
 

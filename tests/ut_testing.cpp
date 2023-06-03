@@ -90,6 +90,40 @@ TEST(case_name_1, expect_true)
     EXPECT_TRUE(1 == 1);
 }
 
+TEST(case_name_1, assert_throw)
+{
+    std::function<void()> throw_fn = []() { throw std::runtime_error(""); };
+
+    ASSERT_THROW(throw_fn, std::runtime_error);
+    ASSERT_THROW(1 == 1, std::runtime_error) << "expected fail";
+    EXPECT_TRUE(2 == 1) << "expected fail";
+}
+
+TEST(case_name_1, assert_no_throw)
+{
+    std::function<void()> throw_fn = []() { throw std::runtime_error(""); };
+
+    ASSERT_NO_THROW(1 == 1);
+    ASSERT_NO_THROW(throw_fn) << "expected fail";
+    EXPECT_TRUE(2 == 1) << "expected fail";
+}
+
+TEST(case_name_1, expect_throw)
+{
+    std::function<void()> throw_fn = []() { throw std::runtime_error(""); };
+
+    EXPECT_THROW(throw_fn, std::runtime_error);
+    EXPECT_THROW(1 == 1, std::runtime_error) << "expected fail";
+}
+
+TEST(case_name_1, expect_no_throw)
+{
+    std::function<void()> throw_fn = []() { throw std::runtime_error(""); };
+
+    EXPECT_NO_THROW(1 == 1);
+    EXPECT_NO_THROW(throw_fn) << "expected fail";
+}
+
 TEST(case_name_2, expect_false)
 {
     EXPECT_FALSE(1 == 2);
