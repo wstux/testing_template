@@ -23,52 +23,43 @@
  */
 
 #include "testing/testdefs.h"
+#include "testing/utils.h"
 
 class test_env : public ::testing::Environment
 {
 public:
     virtual void SetUp() override
     {
-        EXPECTED_TRUE(13 == 1);
+        EXPECTED_TRUE(13 == 1) << "expected fail";
+        EXPECTED_TRUE(::testing::utils::cpu_time_self() < 0)
+            << << "expected fail; " << ::testing::utils::cpu_time_self();
     }
 };
 
 class test_fixture_1 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override
-    {
-        EXPECTED_TRUE(1 == 1);
-    }
+    virtual void SetUp() override { EXPECTED_TRUE(1 == 1); }
 };
 
 class test_fixture_2 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override
-    {
-        EXPECTED_TRUE(1 == 2);
-    }
+    virtual void SetUp() override { EXPECTED_TRUE(1 == 2) << "expected fail"; }
 };
 
 template<typename TType>
 class typed_fixture_1 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override
-    {
-        EXPECTED_TRUE(1 == 1);
-    }
+    virtual void SetUp() override { EXPECTED_TRUE(1 == 1); }
 };
 
 template<typename TType>
 class typed_fixture_2 : public ::testing::Test
 {
 public:
-    virtual void SetUp() override
-    {
-        EXPECTED_TRUE(1 == 1);
-    }
+    virtual void SetUp() override { EXPECTED_TRUE(1 == 1); }
 };
 
 using types_1 = testing::Types<uint8_t, uint16_t, uint32_t>;
@@ -79,14 +70,14 @@ TYPED_TEST_SUITE(typed_fixture_2, types_2);
 
 TEST(case_name_1, assert_true)
 {
-    ASSERT_TRUE(2 == 1);
-    EXPECTED_TRUE(2 == 1);
+    ASSERT_TRUE(2 == 1) << "expected fail";
+    EXPECTED_TRUE(2 == 1) << "expected fail";
 }
 
 TEST(case_name_1, assert_false)
 {
-    ASSERT_FALSE(1 == 1);
-    EXPECTED_TRUE(2 == 1);
+    ASSERT_FALSE(1 == 1) << "expected fail";
+    EXPECTED_TRUE(2 == 1) << "expected fail";
 }
 
 TEST(case_name_1, expected_false)

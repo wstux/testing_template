@@ -5,6 +5,8 @@
     #include <sys/stat.h>
     #include <dirent.h>
     #include <errno.h>
+    #include <fcntl.h>
+    #include <unistd.h>
 #endif
 
 #include <cstdio>
@@ -43,11 +45,11 @@ inline bool is_directory_exists(const std::string& dir)
     return std::filesystem::exists(dir);
 #else
     #ifdef __unix__
-        ::DIR* dir = ::opendir(dir.c_str());
-        if (dir) {
-            ::closedir(dir);
+        ::DIR* p_dir = ::opendir(dir.c_str());
+        if (p_dir != NULL) {
+            ::closedir(p_dir);
             return true;
-        } else if (::errno == ENOENT) {
+        } else if (errno == ENOENT) {
             /* Directory does not exist. */
             return false;
         }
@@ -65,13 +67,13 @@ void remove_directory_recursively(const std::string& dir, std::error_code& err)
     std::filesystem::remove_all(dir, err);
 #else
     #ifdef __unix__
-        ::DIR* dir = ::opendir(dir.c_str());
-        if (! dir) {
+        ::DIR* p_dir = ::opendir(dir.c_str());
+        if (p_dir == NULL) {
             err = std::make_error_code(std::errc::no_such_file_or_directory);
             return;
         }
         struct dirent* ent;
-        while (! err && (ent = ::readdir(dir))) {
+        while (! err && (ent = ::readdir(p_dir))) {
             if (! ::strcmp(ent->d_name, ".") || ! ::strcmp(ent->d_name, "..")) {
                 continue;
             }
@@ -89,7 +91,7 @@ void remove_directory_recursively(const std::string& dir, std::error_code& err)
                 }
             }
         }
-        ::closedir(dir);
+        ::closedir(p_dir);
         if (! err) {
             if (::rmdir(dir.c_str()) != 0) {
                 err = std::make_error_code(std::errc::operation_not_permitted);
@@ -123,7 +125,7 @@ void remove_directory_recursively(const std::string& dir, std::error_code& err)
  */
 
 inline std::string create_tmp_dir(const std::string& prefix);
-inline bool remove_dir(const std::filesystem::path& dir);
+inline bool remove_dir(const std::string& dir);
 inline std::string unique_path(std::string prefix = std::string());
 
 inline std::string create_tmp_dir(const std::string& prefix)
@@ -155,7 +157,11 @@ inline std::string create_tmp_dir(const std::string& prefix)
     if (err) {
         return {};
     }
+#if __cplusplus >= 201703L
     return tmp_dir.string();
+#else
+    return tmp_dir;
+#endif
 }
 
 inline bool remove_dir(const std::string& dir)
@@ -170,6 +176,90 @@ inline bool remove_dir(const std::string& dir)
 }
 
 #ifdef __unix__
+    inline int cpu_ticks(const std::string& stat_path)
+    {
+        struct stat_info_t
+        {
+            int           pid;                      /** The process id. **/
+            char          ex_name[_POSIX_PATH_MAX]; /** The filename of the executable **/
+            char          state; /** 1 **/          /** R is running, S is sleeping,
+                                                        D is sleeping in an uninterruptible wait,
+                                                        Z is zombie, T is traced or stopped **/
+            int           ppid;                     /** The pid of the parent. **/
+            int           pgrp;                     /** The pgrp of the process. **/
+            int           session;                  /** The session id of the process. **/
+            int           tty;                      /** The tty the process uses **/
+            int           tpgid;                    /** (too long) **/
+            unsigned int  flags;                    /** The flags of the process. **/
+            unsigned int  min_flt;                  /** The number of minor faults **/
+            unsigned int  cmin_flt;                 /** The number of minor faults with childs **/
+            unsigned int  maj_flt;                  /** The number of major faults **/
+            unsigned int  cmaj_flt;                 /** The number of major faults with childs **/
+            unsigned int  utime;                    /** user mode jiffies **/
+            unsigned int  stime;                    /** kernel mode jiffies **/
+            unsigned int  cutime;                   /** user mode jiffies with childs **/
+            unsigned int  cstime;                   /** kernel mode jiffies with childs **/
+        };
+
+        const int fd = ::open(stat_path.c_str(), O_RDONLY);
+        if (fd == -1) {
+            return -1;
+        }
+        const int buffer_size = 2048;
+        char buffer[buffer_size];
+
+        int res = ::read(fd, buffer, buffer_size - 1);
+        if (res <= 0) {
+            ::close(fd);
+            return -1;
+        }
+
+        buffer[res] = 0x00;
+
+        stat_info_t info;
+        /* The /proc/PID/stat file is a set of records on one line, separated
+         * by whitespace characters. The desired parameters (the number of
+         * processor ticks in user mode and kernel mode that the process was
+         * running) are in columns 14 and 15.
+         * https://linux.die.net/man/5/proc
+         */
+        res = sscanf(buffer, "%d %s %c %d %d %d %d %d %u %u %u %u %u %u %u %u %u",
+                            /* 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17*/
+                     &(info.pid),       /*  1 */
+                     info.ex_name,      /*  2 */
+                     &(info.state),     /*  3 */
+                     &(info.ppid),      /*  4 */
+                     &(info.pgrp),      /*  5 */
+                     &(info.session),   /*  6 */
+                     &(info.tty),       /*  7 */
+                     &(info.tpgid),     /*  8 */
+                     &(info.flags),     /*  9 */
+                     &(info.min_flt),   /* 10 */
+                     &(info.cmin_flt),  /* 11 */
+                     &(info.maj_flt),   /* 12 */
+                     &(info.cmaj_flt),  /* 13 */
+                     &(info.utime),     /* 14 */
+                     &(info.stime),     /* 15 */
+                     &(info.cutime),    /* 16 */
+                     &(info.cstime));   /* 17 */
+
+        ::close(fd);
+        return info.utime + info.stime;
+    }
+
+    inline double cpu_time(const std::string& stat_path)
+    {
+        int ticks = cpu_ticks(stat_path);
+        if (ticks == -1) {
+            return 0.0;
+        }
+
+        static const long kClockTicks = ::sysconf(_SC_CLK_TCK);
+        return (((double)ticks) / (double)kClockTicks);
+    }
+
+    inline double cpu_time_self() { return cpu_time("/proc/self/stat"); }
+
     inline int mem_usage()
     {
         static const std::string statm_path = "/proc/self/statm";
@@ -191,15 +281,21 @@ inline bool remove_dir(const std::string& dir)
 
 inline std::string unique_path(std::string prefix)
 {
+#if __cplusplus >= 201703L
+    using string_view = std::string_view;
+#else
+    using string_view = std::string;
+#endif
+
     char tmp_name_buffer[L_tmpnam];
     char* p_tmp_name = ::tmpnam_r(tmp_name_buffer);
     if (! p_tmp_name) {
         return {};
     }
 
-    std::string_view tmp_name = tmp_name_buffer;
+    string_view tmp_name = tmp_name_buffer;
     const size_t pos = tmp_name.rfind('/');
-    if (pos == std::string_view::npos) {
+    if (pos == string_view::npos) {
         prefix += tmp_name;
     } else {
         prefix += tmp_name.substr(pos + 1, tmp_name.size() - pos - 1);
