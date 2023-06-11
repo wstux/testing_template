@@ -64,7 +64,7 @@
     if (true) {                                                         \
         bool is_caught = false;                                         \
         try {                                                           \
-            (cond);                                                     \
+            (void)(cond);                                               \
         } catch (const expected_exception&) {                           \
             is_caught = true;                                           \
         } catch (...) {                                                 \
@@ -88,7 +88,7 @@
 #define ASSERT_NO_THROW(cond)                                           \
     if (true) {                                                         \
         try {                                                           \
-            (cond);                                                     \
+            (void)(cond);                                               \
         } catch (...) {                                                 \
             goto __GOTO_LABEL(__label_test_no_throw_, __LINE__);        \
         }                                                               \
@@ -103,7 +103,7 @@
     if (true) {                                                         \
         bool is_caught = false;                                         \
         try {                                                           \
-            (cond);                                                     \
+            (void)(cond);                                               \
         } catch (const expected_exception&) {                           \
             is_caught = true;                                           \
         } catch (...) {                                                 \
@@ -127,7 +127,7 @@
 #define EXPECT_NO_THROW(cond)                                           \
     if (true) {                                                         \
         try {                                                           \
-            (cond);                                                     \
+            (void)(cond);                                               \
         } catch (...) {                                                 \
             goto __GOTO_LABEL(__label_test_no_throw_, __LINE__);        \
         }                                                               \
