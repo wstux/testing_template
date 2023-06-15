@@ -33,7 +33,7 @@ class test_env : public ::testing::Environment
 public:
     virtual void SetUp() override
     {
-        MESSAGE() << "test_env::SetUp()";
+        PERF_MESSAGE() << "test_env::SetUp()";
     }
 };
 
@@ -49,7 +49,7 @@ class typed_fixture : public ::testing::Test
 public:
     virtual void SetUp() override
     {
-        MESSAGE() << "typed_fixture::SetUp()";
+        PERF_MESSAGE() << "typed_fixture::SetUp()";
     }
 };
 
@@ -71,6 +71,7 @@ PERF_TEST_F(test_fixture, perf)
         dummy += v[i];
         PERF_PAUSE_TIMER(test_perf);
     }
+    PERF_MESSAGE() << "test_perf = " << PERF_TIMER_MSECS(test_perf) << " ms";
 }
 
 TYPED_PERF_TEST(typed_fixture, perf)

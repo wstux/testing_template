@@ -71,6 +71,9 @@
 #define __PERF_PAUSE_TIMER_IMPL(sw_name)                            \
     this->__get_sw(#sw_name).pause()
 
+#define __PERF_TIMER_MSECS_IMPL(sw_name)                            \
+    this->__get_sw(#sw_name).value_ms()
+
 /*
  *  \brief  Implementation for TEST macro.
  */

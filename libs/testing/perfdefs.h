@@ -66,6 +66,9 @@
 #define PERF_PAUSE_TIMER(sw_name)                   \
     __PERF_PAUSE_TIMER_IMPL(sw_name)
 
+#define PERF_TIMER_MSECS(sw_name)                   \
+    __PERF_TIMER_MSECS_IMPL(sw_name)
+
 #define PERF_CHECK_TIME(sw_name, funk)              \
     __PERF_START_TIMER_IMPL(sw_name);               \
     (funk);                                         \
