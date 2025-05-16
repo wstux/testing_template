@@ -31,3 +31,5 @@ target_include_directories(
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/libs/${TARGET_NAME} DESTINATION include)
+
