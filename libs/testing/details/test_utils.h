@@ -125,6 +125,7 @@ private:
 
 std::unique_ptr<test_failer> test_failer::m_p_instance = nullptr;
 
+inline void set_fail()       { test_failer::get_instance().fail(); }
 inline void init_case()      { test_failer::get_instance().init_case(); }
 inline bool is_case_failed() { return test_failer::get_instance().is_case_failed(); }
 inline bool is_fatal()       { return test_failer::get_instance().is_fatal(); }
