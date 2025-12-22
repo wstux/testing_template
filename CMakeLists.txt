@@ -23,7 +23,7 @@
 cmake_minimum_required (VERSION 3.10)
 
 project(testing
-        VERSION 0.0.1
+        VERSION 1.0.0
         LANGUAGES CXX)
 
 message(STATUS "[INFO ] Build for '${CMAKE_SYSTEM_NAME}' platform")
