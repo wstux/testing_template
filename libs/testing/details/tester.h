@@ -94,7 +94,11 @@ private:
             std::cout << "[RUN       ] " << m_suite_name << "." << test_name << std::endl;
 
             timer test_sw(true);
-            p_suite->test_body();
+            try {
+                p_suite->test_body();
+            } catch (...) {
+                set_fail();
+            }
             const double test_ms = test_sw.value_ms();
 
             failed_count += (is_case_failed() != 0) ? 1 : 0;
